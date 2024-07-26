@@ -1,0 +1,6 @@
+{% extends "mainTemplates/main.html" %}
+
+{% block content %}
+<h2>Activation successful</h2>
+<p>Your account has been activated. You can now <a href="{% url 'Account:login' %}">log in</a>.</p>
+{% endblock %}
