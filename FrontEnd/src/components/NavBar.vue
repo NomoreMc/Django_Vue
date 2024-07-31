@@ -9,7 +9,7 @@
             <router-link to="/"><TheIcon icon="home" /></router-link>
             <button><TheIcon icon="publish" /></button>
             <div class="profileDropDown">
-                <img src="../assets/avatarDefault.png" width="42" height="42" style="background: #ccc" />
+                <TheAvatar :width="42" :height="42" style="cursor: pointer" />
                 <div class="dropdownMenu">
                     <ul class="profileMenu">
                         <li><router-link to="/profile">个人主页</router-link></li>
@@ -22,6 +22,7 @@
 </template>
 
 <script setup>
+import TheAvatar from './TheAvatar.vue';
 import TheIcon from './TheIcon.vue';
 </script>
 
