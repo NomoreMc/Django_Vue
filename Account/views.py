@@ -27,7 +27,7 @@ from django.core.mail import EmailMessage
 from datetime import datetime, timedelta
 
 from .models import DefaultUser
-from .forms import RegisterForm, LoginForm
+from .forms import RegisterForm, LoginForm, CaptchaLoginForm, UserUpdateForm, ProfileUpdateForm
 
 class RegisterView(FormView):
     form_class = RegisterForm
@@ -148,12 +148,67 @@ def LoginView(request):
 #     TokenObtainPairView,
 #     TokenRefreshView,
 # )
-from rest_framework import generics
+
+# DRF
+
+from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from .models import DefaultUser
-from .serializers import DefaultUserSerializer
+from .serializers import DefaultUserSerializer, UserSerializer
 
 class DefaultUserDetailView(generics.RetrieveAPIView):
     queryset = DefaultUser.objects.all()
-    serializer_class = DefaultUserSerializer
+    serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
+
+# register api view
+class RegisterApiView(generics.CreateAPIView):
+    queryset = DefaultUser.objects.all()
+    serializer_class = UserSerializer
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'user': UserSerializer(user).data,
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }, status=status.HTTP_201_CREATED)
+
+    # def perform_create(self, serializer):
+    #     user = serializer.save()
+    #     user.set_password(user.password)
+    #     user.save()
+    #     # current_site = get_current_site(self.request)
+    #     current_site = settings.SITE_DOMAIN
+    #     mail_subject = 'Activate your account.'
+    #     message = render_to_string('Account/activate_email.html', {
+    #         'user': user,
+    #         'domain': current_site,
+    #         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+    #         'token': default_token_generator.make_token(user),
+    #     })
+    #     email = EmailMessage(
+    #         mail_subject, message, to=[user.email]
+    #     )
+    #     email.send()
+
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+from .serializers import UserLoginSerializer
+
+# login api view
+class LoginApiView(generics.GenericAPIView):
+    serializer_class = UserLoginSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        })

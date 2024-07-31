@@ -20,4 +20,6 @@ from django.urls import path, re_path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     re_path(r'', include('Account.urls', namespace='Account')),
+    re_path(r'', include('Post.urls')),
+    re_path(r'', include('Comment.urls')),
 ]

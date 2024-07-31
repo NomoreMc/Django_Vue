@@ -156,3 +156,6 @@ mediafiles/upload
 
 # personal_web_site secret
 *secret.py
+
+# strapi
+my-project/

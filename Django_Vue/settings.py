@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,10 +39,20 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'Account',
+    'Account.apps.AccountConfig',
+    'Post.apps.PostConfig',
+    'Comment.apps.CommentConfig',
 
     'rest_framework',
     'rest_framework_simplejwt',
+
+    # 三方插件
+    'crispy_forms',                 # cryspy 表单
+    'taggit',                       # tag 标签
+    # 'ckeditor',                     # ckeditor 编辑器
+    # 'ckeditor_uploader',
+    'django_filters',
+    'captcha',
 ]
 
 MIDDLEWARE = [
