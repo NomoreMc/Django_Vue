@@ -22,4 +22,5 @@ urlpatterns = [
     re_path(r'', include('Account.urls', namespace='Account')),
     re_path(r'', include('Post.urls')),
     re_path(r'', include('Comment.urls')),
+    path('api-auth/', include('rest_framework.urls')),
 ]

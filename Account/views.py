@@ -27,53 +27,53 @@ from django.core.mail import EmailMessage
 from datetime import datetime, timedelta
 
 from .models import DefaultUser
-from .forms import RegisterForm, LoginForm, CaptchaLoginForm, UserUpdateForm, ProfileUpdateForm
+# from .forms import LoginForm, CaptchaLoginForm, UserUpdateForm, ProfileUpdateForm
 
-class RegisterView(FormView):
-    form_class = RegisterForm
-    template_name = 'Account/registration_page.html'
-    url = '/login/'
+# class RegisterView(FormView):
+#     form_class = RegisterForm
+#     template_name = 'Account/registration_page.html'
+#     url = '/login/'
 
-    @method_decorator(csrf_protect)
-    def dispatch(self, *args, **kwargs):
-        return super(RegisterView, self).dispatch(*args, **kwargs)
+#     @method_decorator(csrf_protect)
+#     def dispatch(self, *args, **kwargs):
+#         return super(RegisterView, self).dispatch(*args, **kwargs)
 
-    def form_valid(self, form):
-        if form.is_valid():
-            user = form.save(commit=False)
-            # 此处应当先设置为False，之后在通过邮箱验证后才设置为True，验证有效性
-            user.is_active = False
-            # 标定用户创建途径，通过页面注册的用户，后续会有三方的形式注册
-            user.source = 'Register'
-            # 设置用户的最后登录时间
-            user.last_login = datetime.now()
-            user.save(True)
+#     def form_valid(self, form):
+#         if form.is_valid():
+#             user = form.save(commit=False)
+#             # 此处应当先设置为False，之后在通过邮箱验证后才设置为True，验证有效性
+#             user.is_active = False
+#             # 标定用户创建途径，通过页面注册的用户，后续会有三方的形式注册
+#             user.source = 'Register'
+#             # 设置用户的最后登录时间
+#             user.last_login = datetime.now()
+#             user.save(True)
 
-            # current_site 是当前网站的域名
-            # current_site = get_current_site(self.request)
-            current_site = settings.SITE_DOMAIN
-            # 生成邮件主题
-            mail_subject = 'Activate your account.'
-            # 生成邮件内容
-            message = render_to_string('Account/activate_email.html', {
-                'user': user,
-                'domain': current_site,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': default_token_generator.make_token(user),
-            })
-            # 生成 EmailMessage 实例
-            email = EmailMessage(
-                mail_subject, message, to=[form.cleaned_data.get('email')]
-            )
-            # 发送邮件
-            email.send()
+#             # current_site 是当前网站的域名
+#             # current_site = get_current_site(self.request)
+#             current_site = settings.SITE_DOMAIN
+#             # 生成邮件主题
+#             mail_subject = 'Activate your account.'
+#             # 生成邮件内容
+#             message = render_to_string('Account/activate_email.html', {
+#                 'user': user,
+#                 'domain': current_site,
+#                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+#                 'token': default_token_generator.make_token(user),
+#             })
+#             # 生成 EmailMessage 实例
+#             email = EmailMessage(
+#                 mail_subject, message, to=[form.cleaned_data.get('email')]
+#             )
+#             # 发送邮件
+#             email.send()
 
-            return render(self.request, 'Account/auth_email_send_done.html')
-            # return HttpResponseRedirect('/login/')
-        else:
-            return self.render_to_response({
-                'form': form
-            })
+#             return render(self.request, 'Account/auth_email_send_done.html')
+#             # return HttpResponseRedirect('/login/')
+#         else:
+#             return self.render_to_response({
+#                 'form': form
+#             })
 
 def Activate(request, uid, token):
     try:
@@ -109,52 +109,15 @@ def Activate(request, uid, token):
     else:
         return render(request, 'Account/auth_email_confirm_fail.html')
 
-max_failed_login_count = 3
-
-def LoginView(request):
-    if request.POST:
-        failed_login_count = request.session.get('failed_login_count', 0)
-
-        if failed_login_count >= max_failed_login_count:
-            form = CaptchaLoginForm(data=request.POST)
-        else:
-            form = LoginForm(data=request.POST)
-
-        if form.is_valid():
-            request.session['failed_login_count'] = 0
-            user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
-            if user is not None:
-                if user.is_active:
-                    auth.login(request, user)
-                    return redirect('/')
-                else:
-                    messages.error(request, '您的账户还未激活，请先激活账户！')
-                    return redirect('/login/')
-        else:
-            failed_login_count += 1
-            request.session['failed_login_count'] = failed_login_count
-            if failed_login_count >= max_failed_login_count:
-                form = CaptchaLoginForm(data=request.POST)
-    else:
-        failed_login_count = request.session.get('failed_login_count', 0)
-        if failed_login_count >= max_failed_login_count:
-            form = CaptchaLoginForm(request.POST)
-        else:
-            form = LoginForm()
-    return render(request, 'Account/login.html', { 'form': form })
-
-
-# from rest_framework_simplejwt.views import (
-#     TokenObtainPairView,
-#     TokenRefreshView,
-# )
-
 # DRF
-
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from .models import DefaultUser
-from .serializers import DefaultUserSerializer, UserSerializer
+from .serializers import UserSerializer
+
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+from .serializers import UserLoginSerializer
 
 class DefaultUserDetailView(generics.RetrieveAPIView):
     queryset = DefaultUser.objects.all()
@@ -194,10 +157,6 @@ class RegisterApiView(generics.CreateAPIView):
     #         mail_subject, message, to=[user.email]
     #     )
     #     email.send()
-
-from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import UserLoginSerializer
 
 # login api view
 class LoginApiView(generics.GenericAPIView):

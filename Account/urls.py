@@ -12,13 +12,10 @@ from .views import DefaultUserDetailView, RegisterApiView, LoginApiView
 
 app_name = "Account"
 
+# 缺一个 logout view
 urlpatterns = [
-    # re_path(r'^registration/$', views.RegisterView.as_view(), name='register', kwargs={'authentication_form': LoginForm}),
-    # re_path(r'^login/$', views.LoginView, name='login'),
-    # re_path(r'^logout/$', auth_views.LogoutView.as_view(template_name='Account/logout.html'), name='logout'),
-
-    path('register/', RegisterApiView.as_view(), name='register'),
-    path('login/', LoginApiView.as_view(), name='login'),
+    path('api/register/', RegisterApiView.as_view(), name='register'),
+    path('api/login/', LoginApiView.as_view(), name='login'),
     # re_path(r'^logout/$', auth_views.LogoutView.as_view(template_name='Account/logout.html'), name='logout'),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
