@@ -24,3 +24,5 @@ urlpatterns = [
     re_path(r'', include('Comment.urls')),
     path('api-auth/', include('rest_framework.urls')),
 ]
+
+from rest_framework.views import APIView

@@ -171,3 +171,8 @@ class LoginApiView(generics.GenericAPIView):
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         })
+    
+
+from rest_framework.authtoken.views import obtain_auth_token
+from rest_framework.permissions import AllowAny
+from rest_framework.viewsets import ModelViewSet
