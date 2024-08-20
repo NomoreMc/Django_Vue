@@ -266,3 +266,16 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             Tag.objects.annotate(
                 ntag=Count('taggit_taggeditem_items')
             ).filter(ntag=0).delete()
+            
+            
+            
+from rest_framework import APIView
+
+class PostList(APIView):
+    def get(self, request):
+        posts = Post.objects.all()
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        pass

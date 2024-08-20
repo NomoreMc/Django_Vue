@@ -9,7 +9,7 @@ from Post.models import Post
 # Create your models here.
 class Comment(models.Model):
     # 使用ckeditor
-    content = RichTextField(config_name='limited', max_length=300)
+    content = models.TextField('content', max_length=1000)
     created_time = models.DateTimeField('create_time', default=now)
     update_time = models.DateTimeField('modified_time', default=now)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='author', on_delete=models.CASCADE)
