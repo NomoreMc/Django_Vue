@@ -40,7 +40,9 @@ from .serializers import UserLoginSerializer
 
 class DefaultUserDetailView(generics.RetrieveAPIView):
     queryset = DefaultUser.objects.all()
+    lookup_field = 'username'
     serializer_class = UserSerializer
+    
     # permission_classes = [IsAuthenticated]
 
 # register api view
@@ -74,4 +76,9 @@ class LoginApiView(generics.GenericAPIView):
             'access': str(refresh.access_token),
         })
 
-from rest_framework.views import APIView
+from rest_framework import viewsets
+
+
+# class UserViewSet(viewsets.ReadOnlyModelViewSet):
+#     queryset = DefaultUser.objects.all()
+#     serializer_class = UserSerializer

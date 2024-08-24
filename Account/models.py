@@ -3,6 +3,7 @@ from django.db import models
 # Create your models here.
 from django.contrib.auth.models import AbstractUser
 from django.utils.timezone import now
+from django.urls import reverse
 
 class DefaultUser(AbstractUser):
     create_time = models.DateTimeField(default=now)

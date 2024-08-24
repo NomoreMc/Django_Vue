@@ -1,4 +1,5 @@
 from rest_framework import serializers
+# from rest_framework import viewsets
 from .models import DefaultUser
 from django.contrib.auth import authenticate
 
@@ -6,6 +7,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = DefaultUser
         fields = ('id', 'username', 'password', 'email')
+        # lookup_field = 'username'
         extra_kwargs = {
             'password': {'write_only': True}
             }
