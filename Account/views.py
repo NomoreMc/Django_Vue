@@ -27,87 +27,6 @@ from django.core.mail import EmailMessage
 from datetime import datetime, timedelta
 
 from .models import DefaultUser
-# from .forms import LoginForm, CaptchaLoginForm, UserUpdateForm, ProfileUpdateForm
-
-# class RegisterView(FormView):
-#     form_class = RegisterForm
-#     template_name = 'Account/registration_page.html'
-#     url = '/login/'
-
-#     @method_decorator(csrf_protect)
-#     def dispatch(self, *args, **kwargs):
-#         return super(RegisterView, self).dispatch(*args, **kwargs)
-
-#     def form_valid(self, form):
-#         if form.is_valid():
-#             user = form.save(commit=False)
-#             # 此处应当先设置为False，之后在通过邮箱验证后才设置为True，验证有效性
-#             user.is_active = False
-#             # 标定用户创建途径，通过页面注册的用户，后续会有三方的形式注册
-#             user.source = 'Register'
-#             # 设置用户的最后登录时间
-#             user.last_login = datetime.now()
-#             user.save(True)
-
-#             # current_site 是当前网站的域名
-#             # current_site = get_current_site(self.request)
-#             current_site = settings.SITE_DOMAIN
-#             # 生成邮件主题
-#             mail_subject = 'Activate your account.'
-#             # 生成邮件内容
-#             message = render_to_string('Account/activate_email.html', {
-#                 'user': user,
-#                 'domain': current_site,
-#                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-#                 'token': default_token_generator.make_token(user),
-#             })
-#             # 生成 EmailMessage 实例
-#             email = EmailMessage(
-#                 mail_subject, message, to=[form.cleaned_data.get('email')]
-#             )
-#             # 发送邮件
-#             email.send()
-
-#             return render(self.request, 'Account/auth_email_send_done.html')
-#             # return HttpResponseRedirect('/login/')
-#         else:
-#             return self.render_to_response({
-#                 'form': form
-#             })
-
-def Activate(request, uid, token):
-    try:
-        uid = smart_str(urlsafe_base64_decode(uid))
-        user = DefaultUser.objects.get(pk=uid)
-    except(TypeError, ValueError, OverflowError, DefaultUser.DoesNotExist):
-        user = None
-    
-    # 检查用户是否存在
-    if user is not None:
-        # 获取 user 实例的创建时间
-        token_created_at = datetime.fromtimestamp(int(user.date_joined.timestamp()))
-        # 查看当前时间
-        now = datetime.now()
-        # 判断 token 是否在有效期内
-        token_age = now - token_created_at
-
-        # 如果 token 超过 15 分钟，则视为过期
-        if token_age > timedelta(minutes=15):
-            # 删除用户
-            user.delete()
-            return render(request, 'Account/auth_email_confirm_expired.html')
-        
-        # 如果 token 有效，则激活用户
-        if default_token_generator.check_token(user, token):
-            user.is_active = True
-            user.save()
-            return render(request, 'Account/auth_email_confirm_done.html')
-        else:
-            # 否则删除用户
-            user.delete()
-            return render(request, 'Account/auth_email_confirm_fail.html')
-    else:
-        return render(request, 'Account/auth_email_confirm_fail.html')
 
 # DRF
 from rest_framework import generics, status
@@ -122,7 +41,7 @@ from .serializers import UserLoginSerializer
 class DefaultUserDetailView(generics.RetrieveAPIView):
     queryset = DefaultUser.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
 # register api view
 class RegisterApiView(generics.CreateAPIView):
@@ -140,23 +59,6 @@ class RegisterApiView(generics.CreateAPIView):
             'access': str(refresh.access_token),
         }, status=status.HTTP_201_CREATED)
 
-    # def perform_create(self, serializer):
-    #     user = serializer.save()
-    #     user.set_password(user.password)
-    #     user.save()
-    #     # current_site = get_current_site(self.request)
-    #     current_site = settings.SITE_DOMAIN
-    #     mail_subject = 'Activate your account.'
-    #     message = render_to_string('Account/activate_email.html', {
-    #         'user': user,
-    #         'domain': current_site,
-    #         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-    #         'token': default_token_generator.make_token(user),
-    #     })
-    #     email = EmailMessage(
-    #         mail_subject, message, to=[user.email]
-    #     )
-    #     email.send()
 
 # login api view
 class LoginApiView(generics.GenericAPIView):
@@ -171,8 +73,5 @@ class LoginApiView(generics.GenericAPIView):
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         })
-    
 
-from rest_framework.authtoken.views import obtain_auth_token
-from rest_framework.permissions import AllowAny
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.views import APIView

@@ -18,15 +18,6 @@ class DefaultUser(AbstractUser):
         verbose_name_plural = verbose_name
         get_latest_by = 'id'
 
-        # DefaulUser 默认只有评论权限
-        # permissions = [
-        #     ("create_post", "Can create post"),
-        #     ("create_diary", "Can create diary"),
-        #     ("create_series", "Can create series"),
-        #     ("create_comment", "Can create comment"),
-        #     ("create_update_log", "Can create update log"),
-        # ]
-
 # Profile Model
 from django.core.files.storage import default_storage
 from django.conf import settings

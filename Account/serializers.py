@@ -2,16 +2,13 @@ from rest_framework import serializers
 from .models import DefaultUser
 from django.contrib.auth import authenticate
 
-# class DefaultUserSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = DefaultUser
-#         fields = ['id', 'username', 'email', 'create_time', 'last_mod_time', 'source', 'jwt_token']
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = DefaultUser
         fields = ('id', 'username', 'password', 'email')
-        extra_kwargs = {'password': {'write_only': True}}
+        extra_kwargs = {
+            'password': {'write_only': True}
+            }
 
     def create(self, validated_data):
         user = DefaultUser.objects.create_user(

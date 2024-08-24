@@ -1,9 +1,11 @@
 from rest_framework import serializers
 
 from .models import Post
+from Account.models import DefaultUser
 
 
-class PostSerializer(serializers.ModelSerializer):
+class PostSerializer(serializers.HyperlinkedModelSerializer):
+    author = serializers.StringRelatedField()
     class Meta:
         model = Post
-        fields = '__all__'
+        fields = ['title', 'content', 'author', 'date_posted']

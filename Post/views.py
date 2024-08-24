@@ -235,7 +235,7 @@ def PostCreate(request):
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['title', 'content', 'image', 'tags']
+    fields = ['title', 'content', 'tags']
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -266,15 +266,17 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             Tag.objects.annotate(
                 ntag=Count('taggit_taggeditem_items')
             ).filter(ntag=0).delete()
-            
-            
-            
-from rest_framework import APIView
+
+
+
+from rest_framework.views import APIView
+from .serializer import PostSerializer
+from rest_framework.response import Response
 
 class PostList(APIView):
     def get(self, request):
         posts = Post.objects.all()
-        serializer = PostSerializer(posts, many=True)
+        serializer = PostSerializer(posts, context={'request': request}, many=True)
         return Response(serializer.data)
 
     def post(self, request):

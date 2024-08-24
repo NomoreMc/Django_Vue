@@ -4,7 +4,7 @@ from .models import Post
 
 class PostAdmin(admin.ModelAdmin):
     exclude = (
-        'image',
+        # 'image',
         'last_mod_time',
     )
 

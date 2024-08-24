@@ -22,10 +22,6 @@ class Post(models.Model):
     date_posted = models.DateTimeField(default=timezone.now)
     last_mod_time = models.DateTimeField(default=timezone.now)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    # image = models.ImageField(default='post_default.jpg', upload_to='post_images')
-    # views = models.PositiveIntegerField(default=0)
-    # tags = TaggableManager(blank=True)
-    # topic = models.ManyToManyField(Topic, blank=True)
     comment_status = models.CharField('comment status', max_length=1, choices=COMMENT_STATUS,default='o')
 
 
@@ -40,30 +36,3 @@ class Post(models.Model):
         return reverse('post-detail', kwargs={
             'pk': self.pk,
             })
-
-    def save(self, *args, **kwargs):
-        # 如果是更新操作（而不仅仅是更新views字段），更新last_mod_time字段
-        # if self.pk and not ('update_fields' in kwargs and kwargs['update_fields'] == ['views']):
-        #     self.last_mod_time = timezone.now()
-
-        # 现有的保存逻辑
-        # is_update_views = isinstance(self, Post) and 'update_fields' in kwargs and kwargs['update_fields'] == ['views']
-        # if is_update_views:
-        #     Post.objects.filter(pk=self.pk).update(views=self.views)
-        # else:
-        #     if self.pk:
-        #         old_image = Post.objects.get(pk=self.pk).image
-        #         if old_image.name != self.image.name and old_image.name != 'post_default.jpg':
-        #             default_storage.delete(old_image.path)
-        #     super().save(*args, **kwargs)
-
-        #     img = Image.open(self.image.path)
-        #     print("open image successfully")
-        #     if img.width > 600:
-        #         new_width = 600
-        #         new_height = int(img.height * new_width / img.width)
-        #         output_size = (new_width, new_height)
-        #         img.thumbnail(output_size)
-        #         img.save(self.image.path)
-        
-        super().save(*args, **kwargs)
