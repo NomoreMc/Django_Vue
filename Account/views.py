@@ -1,54 +1,25 @@
-from django.shortcuts import render, redirect
-# from django.contrib.sites.shortcuts import get_current_site
-
-# Create your views here.
-
-# 重构User模块
-from django.conf import settings
-from django.views.generic import FormView
-from django.views.decorators.csrf import csrf_protect
-from django.utils.decorators import method_decorator
-from django.contrib import auth, messages
-from django.contrib.auth import authenticate
-from django.contrib.auth import logout, REDIRECT_FIELD_NAME
-from django.contrib.auth.decorators import login_required
-# 用于验证User的基类，用这个form来接收username和password
-# from django.contrib.auth.forms import AuthenticationForm
-# from django.views.decorators.debug import sensitive_post_parameters
-# from django.http import HttpResponseRedirect
-# from django.utils.http import url_has_allowed_host_and_scheme
-
-# 用于验证用户
-from django.contrib.auth.tokens import default_token_generator
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, smart_str
-from django.template.loader import render_to_string
-from django.core.mail import EmailMessage
-from datetime import datetime, timedelta
-
-from .models import DefaultUser
-
 # DRF
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
-from .models import DefaultUser
-from .serializers import UserSerializer
-
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import UserLoginSerializer
 
+from .models import DefaultUser
+from .serializers import UserDescSerializer, UserRegisterSerializer, UserLoginSerializer
+
+""" 以下所有 API 未设置身份验证、权限验证 """
+
+""" 用户详情 API 视图 """
 class DefaultUserDetailView(generics.RetrieveAPIView):
     queryset = DefaultUser.objects.all()
-    lookup_field = 'username'
-    serializer_class = UserSerializer
-    
-    # permission_classes = [IsAuthenticated]
+    serializer_class = UserDescSerializer
+    permission_classes = [IsAuthenticated]
 
-# register api view
+""" 用户注册 API 视图：注册成功后返回用户信息和 token """
 class RegisterApiView(generics.CreateAPIView):
     queryset = DefaultUser.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = UserRegisterSerializer
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -56,13 +27,12 @@ class RegisterApiView(generics.CreateAPIView):
 
         refresh = RefreshToken.for_user(user)
         return Response({
-            'user': UserSerializer(user).data,
+            'user': UserDescSerializer(user).data,
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }, status=status.HTTP_201_CREATED)
 
-
-# login api view
+""" 用户登录 API 视图：登录成功后返回 token """
 class LoginApiView(generics.GenericAPIView):
     serializer_class = UserLoginSerializer
 
@@ -72,13 +42,28 @@ class LoginApiView(generics.GenericAPIView):
         user = serializer.validated_data
         refresh = RefreshToken.for_user(user)
         return Response({
+            'user': UserDescSerializer(user).data,
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         })
 
-from rest_framework import viewsets
+class UpdateApiView(generics.UpdateAPIView):
+    queryset = DefaultUser.objects.all()
+    serializer_class = UserRegisterSerializer
+    permission_classes = [IsAuthenticated]
 
+    # 使用 PUT 方法来更新用户信息
+    def put(self, request, *args, **kwargs):
+        user = self.get_object()
+        serializer = self.get_serializer(user, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'user': UserDescSerializer(user).data,
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }, status=status.HTTP_201_CREATED)
 
-# class UserViewSet(viewsets.ReadOnlyModelViewSet):
-#     queryset = DefaultUser.objects.all()
-#     serializer_class = UserSerializer
+    def get_object(self):
+        return self.request.user
