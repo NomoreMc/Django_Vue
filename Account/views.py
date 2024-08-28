@@ -54,16 +54,23 @@ class UpdateApiView(generics.UpdateAPIView):
 
     # 使用 PUT 方法来更新用户信息
     def put(self, request, *args, **kwargs):
+        # 获取对应的 user 实例
         user = self.get_object()
+        # 获取序列化器实例，传入 user 实例和 request.data，后者将用于更新 user 实例
         serializer = self.get_serializer(user, data=request.data)
+        # 验证数据是否合法
         serializer.is_valid(raise_exception=True)
+        # 调用 perform_update，内部会调用序列化器的 update 方法进行实际的更新操作
         self.perform_update(serializer)
+        # 为 user 生成新的 token
         refresh = RefreshToken.for_user(user)
+        # 返回更新后的 user 信息和 token
         return Response({
             'user': UserDescSerializer(user).data,
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }, status=status.HTTP_201_CREATED)
 
+    # 重写 get_object 方法，返回当前请求的用户实例
     def get_object(self):
         return self.request.user
