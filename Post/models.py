@@ -21,9 +21,8 @@ class Post(models.Model):
     content = RichTextUploadingField(config_name='default')
     date_posted = models.DateTimeField(default=timezone.now)
     last_mod_time = models.DateTimeField(default=timezone.now)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="posts")
     comment_status = models.CharField('comment status', max_length=1, choices=COMMENT_STATUS,default='o')
-
 
     def __str__(self):
         return self.title

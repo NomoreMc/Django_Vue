@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import DefaultUser
-from .serializers import UserDescSerializer, UserRegisterSerializer, UserLoginSerializer
+from .serializers import UserDescSerializer, UserRegisterSerializer, UserLoginSerializer, UserHyperlinkSerializer
 
 """ 以下所有 API 未设置身份验证、权限验证 """
 
@@ -14,6 +14,21 @@ class DefaultUserDetailView(generics.RetrieveAPIView):
     queryset = DefaultUser.objects.all()
     serializer_class = UserDescSerializer
     permission_classes = [IsAuthenticated]
+    lookup_field = 'pk'
+
+# from rest_framework.views import APIView
+# class DefaultUserDetailView(APIView):
+#     lookup_field = 'username'
+#     def get(self, request, username):
+#         try:
+#             user = DefaultUser.objects.get(username=username)
+#         except DefaultUser.DoesNotExist:
+#             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+#         serializer = UserDescSerializer(user, context={'request': request})
+#         return Response(serializer.data)
+
+
 
 """ 用户注册 API 视图：注册成功后返回用户信息和 token """
 class RegisterApiView(generics.CreateAPIView):
@@ -37,12 +52,12 @@ class LoginApiView(generics.GenericAPIView):
     serializer_class = UserLoginSerializer
 
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.get_serializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
         refresh = RefreshToken.for_user(user)
         return Response({
-            'user': UserDescSerializer(user).data,
+            'user': UserDescSerializer(user, context={'request': request}).data,
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         })
