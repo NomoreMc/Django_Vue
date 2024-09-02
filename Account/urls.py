@@ -1,9 +1,6 @@
 from django.urls import path
 
-
 from .views import DefaultUserDetailView, RegisterApiView, LoginApiView, UpdateApiView
-
-# app_name = "Account"
 
 # 缺一个 logout view
 urlpatterns = [

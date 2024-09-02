@@ -6,14 +6,10 @@ from django.contrib.auth import authenticate
 """ Post 列表中引用的嵌套序列化器 """
 # class UserDescSerializer(serializers.ModelSerializer):
 class UserDescSerializer(serializers.HyperlinkedModelSerializer):
-    # url = serializers.HyperlinkedIdentityField(view_name='user-detail', lookup_field='pk')
     url = serializers.HyperlinkedIdentityField(view_name='user-detail', lookup_field='pk')
     class Meta:
         model = DefaultUser
         fields = ['id', 'username', 'email', 'url']
-        # extra_kwargs = {
-        #     'url': {'view_name': 'user-detail', 'lookup_field': 'pk'},
-        # }
 
 
 """ 用户注册以及更新时使用的序列化器 """
@@ -71,20 +67,3 @@ class UserLoginSerializer(serializers.Serializer):
 
         data['user'] = user
         return user
-    
-# not using
-class UserDetailSerializer(serializers.ModelSerializer):
-    posts = serializers.HyperlinkedRelatedField(many=True, view_name='post-detail', read_only=True)
-    class Meta:
-        model = DefaultUser
-        fields = ['id', 'username', 'email', 'posts']
-
-# for post hyperlink field
-class UserHyperlinkSerializer(serializers.ModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='user-detail', lookup_field='id')
-    class Meta:
-        model = DefaultUser
-        fields = ['id', 'username', 'email', 'url']
-        # extra_kwargs = {
-        #     'url': {'view_name': 'user-detail'}
-        # }

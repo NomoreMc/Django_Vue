@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import DefaultUser
-from .serializers import UserDescSerializer, UserRegisterSerializer, UserLoginSerializer, UserHyperlinkSerializer
+from .serializers import UserDescSerializer, UserRegisterSerializer, UserLoginSerializer
 
 """ 以下所有 API 未设置身份验证、权限验证 """
 
