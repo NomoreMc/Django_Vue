@@ -44,19 +44,31 @@ class PostApiUpdate(generics.UpdateAPIView):
     serializer_class = PostUpdateSerializer
 
     def put(self, request, *args, **kwargs):
+        # 获取对象
         instance = self.get_object()
+        # 创建序列化器
         serializer = self.get_serializer(instance, data=request.data, partial=True)
-
+        # 验证数据
         serializer.is_valid(raise_exception=True)
-
+        # 执行数据更新操作
         self.perform_update(serializer)
+        # 返回更新后的数据以及状态码
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
     def perform_update(self, serializer):
         serializer.save()
 
 
 # post 删除视图
-class PostApiDelete(APIView):
+class PostApiDelete(generics.DestroyAPIView):
+    queryset = Post.objects.all()
+
     def delete(self, request, pk):
-        pass
+        instance = self.get_object()
+
+        self.perform_destroy(instance)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    def perform_destroy(self, instance):
+        instance.delete()
