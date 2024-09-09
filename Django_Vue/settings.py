@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'Comment.apps.CommentConfig',
 
     'rest_framework',
-    'rest_framework_simplejwt',
+    'knox',
+    # 'rest_framework_simplejwt',
 
     # 三方插件
     'crispy_forms',                 # cryspy 表单
@@ -143,7 +144,8 @@ AUTH_USER_MODEL = 'Account.DefaultUser'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'knox.auth.TokenAuthentication',
     ),
 }
 

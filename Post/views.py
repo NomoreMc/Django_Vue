@@ -13,7 +13,6 @@ class PostApiList(APIView):
 
     def post(self, request):
         pass
-    
 
 class PostApiDetail(APIView):
     def get(self, request, pk):
