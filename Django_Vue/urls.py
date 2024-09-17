@@ -23,6 +23,8 @@ from django.urls import path, re_path, include
 #     TokenRefreshView,
 # )
 
+from knox import views as knox_views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('Account.urls')),
@@ -35,5 +37,7 @@ urlpatterns = [
     # path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     # knox urls
-    path('api/auth/', include('knox.urls')),
+    path('api/auth/', include('KnoxCustomized.urls')),
+    path('api/auth/logout/', knox_views.LogoutView.as_view(), name='knox_logout'),
+    path('api/auth/logoutall/', knox_views.LogoutAllView.as_view(), name='knox_logoutall'),
 ]

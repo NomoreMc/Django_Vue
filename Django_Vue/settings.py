@@ -145,6 +145,7 @@ AUTH_USER_MODEL = 'Account.DefaultUser'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
         'knox.auth.TokenAuthentication',
     ),
 }
