@@ -150,6 +150,7 @@ REST_FRAMEWORK = {
     ),
 }
 
+''' Simple JWT '''
 from datetime import timedelta
 
 SIMPLE_JWT = {
@@ -158,4 +159,10 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+''' Knox '''
+REST_KNOX = {
+    'USER_SERIALIZER': 'Account.serializers.UserSerializer',
+    'TOKEN_TTL': timedelta(hours=24),
 }

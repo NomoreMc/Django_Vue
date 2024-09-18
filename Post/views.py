@@ -28,8 +28,14 @@ class PostApiDetail(APIView):
 
 from rest_framework import generics
 from .serializers import PostCreateSerializer
+from rest_framework.permissions import IsAuthenticated
+from knox.auth import TokenAuthentication
 # post 创建视图
 class PostApiCreate(generics.CreateAPIView):
+    # 使用 knox token auth 进行身份验证
+    authentication_classes = [TokenAuthentication,]
+    permission_classes = [IsAuthenticated,]
+
     queryset = Post.objects.all()
     serializer_class = PostCreateSerializer
     def create(self, request, *args, **kwargs):
@@ -39,6 +45,9 @@ from .serializers import PostUpdateSerializer
 from rest_framework import status
 # post 更新视图
 class PostApiUpdate(generics.UpdateAPIView):
+    authentication_classes = [TokenAuthentication,]
+    permission_classes = [IsAuthenticated,]
+
     queryset = Post.objects.all()
     serializer_class = PostUpdateSerializer
 
@@ -60,6 +69,9 @@ class PostApiUpdate(generics.UpdateAPIView):
 
 # post 删除视图
 class PostApiDelete(generics.DestroyAPIView):
+    authentication_classes = [TokenAuthentication,]
+    permission_classes = [IsAuthenticated,]
+
     queryset = Post.objects.all()
 
     def delete(self, request, pk):

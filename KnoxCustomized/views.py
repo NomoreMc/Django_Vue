@@ -9,14 +9,17 @@ class LoginView(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
+        # 调用 is_valid 时会调用序列化器的 validate 方法，validate 方法会调用 authenticate 方法进行用户验证
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         login(request, user)
+        instance, token = AuthToken.objects.create(user)
         # 创建并返回 Knox 令牌
         return Response({
             "user": {
                 "id": user.id,
                 "username": user.username,
             },
-            "token": AuthToken.objects.create(user)[1]
+            "expiry": instance.expiry,
+            "token": token
         })
