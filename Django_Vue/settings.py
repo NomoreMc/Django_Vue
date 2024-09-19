@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'knox',
+    'corsheaders',
     # 'rest_framework_simplejwt',
 
     # 三方插件
@@ -59,6 +60,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -166,3 +168,6 @@ REST_KNOX = {
     'USER_SERIALIZER': 'Account.serializers.UserSerializer',
     'TOKEN_TTL': timedelta(hours=24),
 }
+
+
+''' CORS '''

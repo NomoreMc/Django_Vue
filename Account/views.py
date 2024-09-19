@@ -28,7 +28,7 @@ class DefaultUserDetailView(generics.RetrieveAPIView):
 #         serializer = UserDescSerializer(user, context={'request': request})
 #         return Response(serializer.data)
 
-
+# from knox.models import AuthToken
 
 """ 用户注册 API 视图：注册成功后返回用户信息和 token """
 class RegisterApiView(generics.CreateAPIView):
@@ -40,12 +40,21 @@ class RegisterApiView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
 
-        refresh = RefreshToken.for_user(user)
+        ''' 以下是为用户生成 knox token 的代码 '''
+        # instance, token = AuthToken.objects.create(user)
         return Response({
-            'user': UserDescSerializer(user).data,
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }, status=status.HTTP_201_CREATED)
+            "user": UserDescSerializer(user, context={'request': request}).data,
+            # "expiry": instance.expiry,
+            # "token": token
+        })
+
+        ''' 以下是为用户生成 jwt token 的代码 '''
+        # refresh = RefreshToken.for_user(user)
+        # return Response({
+        #     'user': UserDescSerializer(user).data,
+        #     'refresh': str(refresh),
+        #     'access': str(refresh.access_token),
+        # }, status=status.HTTP_201_CREATED)
 
 """ 用户登录 API 视图：登录成功后返回 token """
 class LoginApiView(generics.GenericAPIView):

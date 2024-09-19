@@ -12,9 +12,9 @@ const user = {
         },
     },
     actions: {
-        async registerUser({commit}, { email, username, password }) {
+        async registerUser({commit}, { username, password, email }) {
             /* 调用 api 向后端发送用户注册请求 */
-            const user = await register(email, username, password);
+            const user = await register(username, password, email);
             commit("setUser", user);
         },
     },
