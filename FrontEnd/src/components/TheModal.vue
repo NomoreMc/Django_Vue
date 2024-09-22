@@ -3,7 +3,7 @@
         <div class="modal">
             <div class="backdrop"></div>
             <div class="modalContent">
-                <button class="closeBtn"><TheIcon icon="close" /></button>
+                <button class="closeBtn" @click="$emit('close')"><TheIcon icon="close" /></button>
                 <slot></slot>
             </div>
         </div>
@@ -12,6 +12,10 @@
 
 <script setup>
 import TheIcon from './TheIcon.vue';
+import { defineEmits } from 'vue';
+
+/* 触发关闭事件，由父组件处理 */
+defineEmits(['close']);
 </script>
 
 <style scoped>

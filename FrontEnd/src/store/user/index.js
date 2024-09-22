@@ -1,4 +1,4 @@
-import { getUser, register } from "../../apis/auth";
+import { getUser, register, login } from "../../apis/auth";
 
 const user = {
     state() {
@@ -15,6 +15,11 @@ const user = {
         async registerUser({commit}, { username, password, email }) {
             /* 调用 api 向后端发送用户注册请求 */
             const user = await register(username, password, email);
+            commit("setUser", user);
+        },
+        async loginUser({ commit }, { username, password }) {
+            /* 调用 api 向后端发送用户登录请求 */
+            const user = await login(username, password);
             commit("setUser", user);
         },
     },

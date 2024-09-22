@@ -9,6 +9,7 @@ export default defineConfig({
         "/Account/api": 'http://localhost:8000',
         "/api": 'http://localhost:8000',
         "/upload": 'http://localhost:8000',
+        "/Post/api": 'http://localhost:8000',
     },
   },
 })

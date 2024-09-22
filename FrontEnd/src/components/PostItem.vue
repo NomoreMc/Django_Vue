@@ -4,12 +4,23 @@
     <div class="postInfo">
       <div class="postMeta">
         <TheAvatar />
-        <span>Nomore</span>
-        <span class="postPubDate">12 hours ago</span>
-        <PostActions />
+        <span>{{ post.author.username }}</span>
+        <span class="postPubDate">{{ dateToRelative(post.date_posted) }}</span>
+        <PostActions
+          :likes="post.likes"
+          :comments="post.comments"
+          :favors="post.favors"
+          :likedByMe="post.likedByMe"
+          :favoredByMe="post.favoredByMe"
+          @likeClick="$store.dispatch('toggleLike', post.id)"
+          @favorClick="$store.dispatch('toggleFavor', post.id)"
+        />
+      </div>
+      <div class="postTitle">
+        <p>{{ post.title }}</p>
       </div>
       <div class="postDesc">
-        <p>this is a post description #test #testing #testtest</p>
+        <p>{{ post.content }}</p>
       </div>
     </div>
   </div>
@@ -18,6 +29,18 @@
 <script setup>
 import PostActions from "../components/PostActions.vue";
 import TheAvatar from "../components/TheAvatar.vue";
+import { defineProps } from "vue";
+import { dateToRelative } from "../utils/date";
+// import { useStore } from "vuex";
+
+// const store = useStore();
+
+defineProps({
+    post: {
+      type: Object,
+      default: {},
+    },
+});
 </script>
 
 <style scoped>
@@ -61,6 +84,13 @@ import TheAvatar from "../components/TheAvatar.vue";
   justify-self: end;
 }
 
+.postTitle {
+  margin-top: 0px;
+  font-size: 24px;
+  font-weight: 500;
+  color: #696868;
+}
+
 .postDesc {
   margin-top: 28px;
   white-space: pre-line;
@@ -81,6 +111,8 @@ import TheAvatar from "../components/TheAvatar.vue";
 .postMeta {
   padding: 24px;
   padding-top: 36px;
+  padding-bottom: 12px;
+  padding-left: 0px;
   display: grid;
   align-items: start;
   grid-template-rows: max-content max-content 1fr max-content;

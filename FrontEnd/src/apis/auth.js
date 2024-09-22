@@ -49,3 +49,17 @@ export async function register(username, password, email) {
 
     return result.user.username;
 }
+
+export async function login(username, password) {
+    const result = await request("/api/auth/login/", {
+        method: "POST",
+        auth: false,
+        body: {
+            username,
+            password,
+        },
+    });
+    setToken(result.token);
+    saveUser(result.user);
+    return result.user.username;
+}

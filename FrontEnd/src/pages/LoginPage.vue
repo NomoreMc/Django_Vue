@@ -12,7 +12,7 @@
           v-model="username"
         />
         <input type="password" placeholder="密码" v-model="password" />
-        <button type="submit" class="loginButton" @click="register">
+        <button type="submit" class="loginButton" @click="isLogin ? login() : register()">
           {{ isLogin ? "登录" : "注册" }}
         </button>
         <p @click="isLogin = !isLogin" class="info">
@@ -59,6 +59,16 @@ async function register() {
 
   router.replace("/");
 }
+
+async function login() {
+  const res = await store.dispatch("loginUser", {
+    username: email.value,
+    password: password.value,
+  });
+
+  router.replace("/");
+}
+
 </script>
 
 <style scoped>

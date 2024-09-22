@@ -41,6 +41,9 @@ class PostApiCreate(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
 
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
 from .serializers import PostUpdateSerializer
 from rest_framework import status
 # post 更新视图

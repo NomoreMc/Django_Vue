@@ -13,15 +13,16 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
 class PostCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ['title', 'content', 'author']
+        fields = ['title', 'content']
 
-    def create(self, validated_data):
-        post = Post.objects.create(
-            title=validated_data['title'],
-            content=validated_data['content'],
-            author=validated_data['author']
-        )
-        return post
+    # def create(self, validated_data):
+    #     user = self.context['request'].user
+    #     post = Post.objects.create(
+    #         title=validated_data['title'],
+    #         content=validated_data['content'],
+    #         author=user,
+    #     )
+    #     return post
 
 class PostUpdateSerializer(serializers.ModelSerializer):
     class Meta:
