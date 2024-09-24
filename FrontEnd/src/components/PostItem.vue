@@ -1,6 +1,10 @@
 <template>
   <div class="postItem">
-    <img src="" alt="" width="100%" height="100%" style="background: #eee" />
+    <img src="../assets/background.png" alt=""
+    @click="$store.dispatch('showPostDetails', post.id)"
+    width="100%"
+    height="100%"
+    style="background: #eee" />
     <div class="postInfo">
       <div class="postMeta">
         <TheAvatar />
@@ -14,6 +18,7 @@
           :favoredByMe="post.favoredByMe"
           @likeClick="$store.dispatch('toggleLike', post.id)"
           @favorClick="$store.dispatch('toggleFavor', post.id)"
+          @commentClick="$store.dispatch('showPostDetails', post.id)"
         />
       </div>
       <div class="postTitle">

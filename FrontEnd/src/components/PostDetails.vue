@@ -1,37 +1,43 @@
 <template>
-  <TheModal>
+  <TheModal @close="$store.dispatch('hidePostDetails')">
     <div class="postDetails">
-      <img class="postImage" src="" alt="" />
+      <img class="postImage" src="../assets/background.png" alt="" />
       <div class="postMeta">
         <div class="author">
           <TheAvatar />
-          <span>Nomore</span>
+          <span>{{ post?.author?.username }}</span>
         </div>
         <pre class="postDesc">
-this is a post description
-
-#test #testing #testtest
-                        </pre
-        >
+{{ post?.content }}
+        </pre>
         <div class="comments">
-          <div class="comment" v-for="n in 10">
-            <TheAvatar />
-            <span>tester</span>
-            <span class="commentDate">1d</span>
-            <p class="commentContent">好！</p>
+          <div class="comment" v-for="comment in comments">
+            <TheAvatar src="../assets/avatarDefault.png"/>
+            <span class="user">{{ comment?.author?.username }}</span>
+            <span class="commentDate">{{ dateToRelative(comment.create_time) }}</span>
+            <p class="commentContent">{{ comment.content }}</p>
           </div>
         </div>
         <div class="actions">
-          <PostActions />
-          <span class="postPubDate">12h</span>
+          <PostActions
+            :likes="post.likes"
+            :comments="post.comments"
+            :favors="post.favors"
+            :likedByMe="post.likedByMe"
+            :favoredByMe="post.favoredByMe"
+            @likeClick="$store.dispatch('toggleLike', post.id)"
+            @favorClick="$store.dispatch('toggleFavor', post.id)"
+          />
+          <span class="postPubDate">{{ dateToRelative(post.date_posted) }}</span>
           <input
             type="text"
             name="comment"
             id=""
             class="commentInput"
             placeholder="写一条评论吧！"
+            v-model="commentContent"
           />
-          <button class="commentPubBtn">发布</button>
+          <button @click="store.dispatch('addComment', { commentContent, postId: post.id })" class="commentPubBtn">发布</button>
         </div>
       </div>
     </div>
@@ -43,6 +49,16 @@ import TheAvatar from "./TheAvatar.vue";
 import TheIcon from "./TheIcon.vue";
 import PostActions from "./PostActions.vue";
 import TheModal from "./TheModal.vue";
+import { useStore } from "vuex";
+import { computed, ref } from "vue";
+import { dateToRelative } from "../utils/date";
+
+const commentContent = ref("");
+
+const store = useStore();
+const post = computed(() => store.getters.postDetails);
+const comments = computed(() => store.state.comment.commentList);
+
 </script>
 
 <style scoped>

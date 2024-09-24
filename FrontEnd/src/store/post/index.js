@@ -34,6 +34,10 @@ const post = {
         setCurrentPostId(state, id) {
             state.currentPostId = id;
         },
+        increaseCommentCount(state, postId) {
+            const post = state.list.find((post) => post.id === postId);
+            post.comments++;
+        },
     },
     actions: {
         async uploadPost({ commit, dispatch }, { image, title, description }) {
@@ -55,8 +59,9 @@ const post = {
             const isFavor = await favorPost(id);
             commit("toggleFavor", { id, isFavor });
         },
-        async showPostDetails({ commit }, id) {
+        async showPostDetails({ commit, dispatch }, id) {
             commit("setCurrentPostId", id);
+            dispatch("loadAllComments", id);
             commit("changeShowPostDetails", true);
         },
         async hidePostDetails({ commit }) {
