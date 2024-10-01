@@ -1,5 +1,5 @@
 import { changeUser } from "../../apis/user";
-import { getUser, register, login } from "../../apis/auth";
+import { getUser, register, login, logout } from "../../apis/auth";
 
 const user = {
     state() {
@@ -26,6 +26,10 @@ const user = {
         async updateUser({ commit }, user) {
             const updatedUser = await changeUser(user);
             commit("setUser", updatedUser);
+        },
+        async logoutUser({ commit }) {
+            logout();
+            commit("setUser", {});
         },
     },
 };

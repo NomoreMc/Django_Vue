@@ -15,23 +15,22 @@
       </div>
     </div>
     <div class="tabs">
-      <div class="tab active">
-        <TheIcon icon="posts" />
-        <p>我的</p>
-      </div>
-      <div class="tab">
-        <TheIcon icon="like" />
-        <p>赞过</p>
-      </div>
-      <div class="tab">
-        <TheIcon icon="favorite" />
-        <p>收藏</p>
+      <div v-for="(tab, index) in tabs" class="tab"
+        :class="{ active: index === currentTab }"
+        :key="index"
+        @click="currentTab = index"
+      >
+        <TheIcon :icon="tab.icon" />
+        <p>{{ tab.label }}</p>
       </div>
     </div>
     <div class="tabContent">
-      <p>100 篇帖子</p>
+      <p>{{ myPosts[currentTab].length }}</p>
       <div class="posts">
-        <img src="" class="postImage" v-for="n in 9" />
+        <img v-for="post in myPosts[currentTab]"
+        :src="post.image"
+        :key="post.id"
+        class="postImage" />
       </div>
     </div>
   </div>
@@ -39,9 +38,10 @@
 
 <script setup>
 import { useStore } from "vuex";
-import { computed } from "vue";
+import { computed, ref, reactive, watch } from "vue";
 import TheAvatar from "../components/TheAvatar.vue";
 import TheIcon from "../components/TheIcon.vue";
+import { loadPostsByMe, loadPostsLikedOrFavoredByMe } from "../apis/post";
 
 const store = useStore();
 
@@ -63,6 +63,34 @@ const tabs = ref([
 ]);
 
 const currentTab = ref(0);
+
+const myPosts = reactive({
+  0: [],
+  1: [],
+  2: [],
+});
+
+watch(currentTab, async() => {
+  switch(currentTab.value) {
+    case 0:
+      if (myPosts[0].length === 0) {
+        myPosts[0] = await loadPostsByMe();
+      }
+      break;
+    case 1:
+      if (myPosts[1].length === 0) {
+        myPosts[1] = await loadPostsLikedOrFavoredByMe();
+      }
+      break;
+    case 2:
+      if (myPosts[2].length === 0) {
+        myPosts[2] = await loadPostsLikedOrFavoredByMe("favors");
+      }
+      break;
+    default:
+      return;
+  }
+}, { immediate: true });
 
 </script>
 

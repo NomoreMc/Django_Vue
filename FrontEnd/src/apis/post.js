@@ -1,4 +1,4 @@
-import { getToken } from "./auth";
+import { getToken, getUser } from "./auth";
 import { request } from "../utils/request";
 
 export async function createPost(image, title, description) {

@@ -9,11 +9,13 @@
             <router-link to="/"><TheIcon icon="home" /></router-link>
             <button @click="publishPost()"><TheIcon icon="publish" /></button>
             <div class="profileDropDown">
-                <TheAvatar :width="42" :height="42" style="cursor: pointer" />
-                <div class="dropdownMenu">
+                <TheAvatar :width="42" :height="42" style="cursor: pointer"
+                  @click="showDropdown = !showDropdown"
+                />
+                <div class="dropdownMenu" v-show="showDropdown" @click="showDropdown = false">
                     <ul class="profileMenu">
                         <li><router-link to="/profile">个人主页</router-link></li>
-                        <li>退出登录</li>
+                        <li @click="logout">退出登录</li>
                     </ul>
                 </div>
             </div>
@@ -25,11 +27,28 @@
 import TheAvatar from './TheAvatar.vue';
 import TheIcon from './TheIcon.vue';
 import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
+import { ref } from 'vue';
 
 const store = useStore();
+const router = useRouter();
+const showDropdown = ref(false);
 
 function publishPost() {
     store.commit("changeShowPostUpload", true);
+}
+
+/*
+async function searchPosts() {
+    // search posts
+}
+*/
+
+async function logout() {
+    await store.dispatch("logoutUser");
+
+    // 此处没有跳转
+    router.push("/login");
 }
 
 </script>

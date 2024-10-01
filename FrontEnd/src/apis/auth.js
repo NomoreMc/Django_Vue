@@ -63,3 +63,30 @@ export async function login(username, password) {
     saveUser(result.user);
     return result.user.username;
 }
+
+export async function logout() {
+    // return;
+    // localStorage.removeItem('jwtToken');
+    // const result = await request("/api/auth/logout/", {
+    //     method: "POST",
+    //     body: {},
+    //     headers: {
+    //         "Authorization": `Token ${getToken()}`,
+    //     },
+    // });
+
+    const result = await fetch("/api/auth/logout/", {
+        method: "POST",
+        headers: {
+            Authorization: `Token ${getToken()}`,
+        },
+        body: {},
+    });
+
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+
+    console.log("logout done");
+
+    return;
+}
