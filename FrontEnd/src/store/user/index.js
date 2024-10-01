@@ -1,3 +1,4 @@
+import { changeUser } from "../../apis/user";
 import { getUser, register, login } from "../../apis/auth";
 
 const user = {
@@ -21,6 +22,10 @@ const user = {
             /* 调用 api 向后端发送用户登录请求 */
             const user = await login(username, password);
             commit("setUser", user);
+        },
+        async updateUser({ commit }, user) {
+            const updatedUser = await changeUser(user);
+            commit("setUser", updatedUser);
         },
     },
 };

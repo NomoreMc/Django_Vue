@@ -21,7 +21,9 @@ export async function createPost(image, title, description) {
     });
 }
 
-export async function loadPost() {
+// TODO：要修改 loadPosts 函数，使其支持筛选条件，当前后端未提供筛选条件
+export async function loadPosts(filters = "") {
+    // const result = await request("/Post/api/post/list/" + (filters && `&${filters}`), {
     const result = await request("/Post/api/post/list/", {
         method: "GET",
         headers: {
@@ -48,6 +50,28 @@ export async function loadPost() {
         favored_bies: 0,
         favoredByMe: false,
         comments: 0,
+    }));
+}
+
+// 加载我发布的 post，需要修改
+export async function loadPostsByMe() {
+    return loadPosts(`filters[user][id][$eq]=${getUser().id}`);
+}
+
+// 加载我点赞过的 post，需要修改
+export async function loadPostsLikedOrFavoredByMe(type = "likes") {
+    return null;
+    const response = await request(
+        `/Account/me?populate[${type}][populate][0]=image`,
+        {
+            method: "GET",
+            headers: {
+                Authorization: `Token ${getToken()}`,
+            },
+        });
+    return response[type].map((post) => ({
+        ...post,
+        image: post?.image?.[0].url,
     }));
 }
 

@@ -2,30 +2,30 @@
   <div>
     <h2 class="title">编辑个人资料</h2>
     <div class="changeAvatar">
-      <TheAvatar :width="48" :height="48" />
+      <TheAvatar :width="48" :height="48" :src="profileData.avatar" />
       <TheButton>修改头像</TheButton>
-      <input type="file" class="inputFile" />
+      <input type="file" class="inputFile" @change="uploadAvatar" />
     </div>
-    <form class="profileForm">
+    <form class="profileForm" @submit.prevent="updateUser" >
       <label for="username">用户名：</label>
-      <input type="text" />
+      <input type="text" v-model="profileData.username" />
       <label for="name">昵称：</label>
-      <input type="text" />
+      <input type="text" v-model="profileData.name"/>
       <label for="intro">简介：</label>
-      <textarea rows="12"></textarea>
+      <textarea rows="12" v-model="profileData.intro" ></textarea>
       <label for="mobilePhone">手机号：</label>
-      <input type="text" />
+      <input type="text" v-mode="profileData.mobilePhone" />
       <label>性别：</label>
       <div class="genderRadios">
-        <input type="radio" name="gender" id="M" value="M" />
+        <input type="radio" name="gender" id="M" value="M" v-model="profileData.gender" />
         男
-        <input type="radio" name="gender" id="F" value="F" />
+        <input type="radio" name="gender" id="F" value="F" v-model="profileData.gender" />
         女
       </div>
       <label for="website">网站：</label>
-      <input type="text" />
+      <input type="text" v-model="profileData.website" />
       <div class="actions">
-        <TheButton type="reset" reverse>取消</TheButton>
+        <TheButton type="reset" reverse @click.prevent="router.push('/profile')">取消</TheButton>
         <TheButton type="submit">确认</TheButton>
       </div>
     </form>
@@ -33,8 +33,40 @@
 </template>
 
 <script setup>
+import { useStore } from 'vuex';
+import { computed, reactive } from 'vue';
 import TheAvatar from '../components/TheAvatar.vue';
 import TheButton from '../components/TheButton.vue';
+import { uploadFile } from '../apis/file';
+import { useRouter } from 'vue-router';
+
+const store = useStore();
+const router = useRouter();
+
+const user = computed(() => store.state.user.user);
+
+// 个人资料响应性数据，需要修改和后端提供的一致
+const profileData = reactive({
+  avatar: user.value.avatar,
+  username: user.value.username,
+  name: user.value.name,
+  intro: user.value.intro,
+  mobilePhone: user.value.mobilePhone,
+  gender: user.value.gender,
+  website: user.value.website,
+});
+
+async function uploadAvatar(e) {
+  const file = e.target.files[0];
+  const url = await uploadFile(file);
+  profileData.avatar = url;
+}
+
+async function updateUser() {
+  await store.dispatch('updateUser', profileData);
+  // 跳转到个人资料页面
+  router.push('/profile');
+}
 </script>
 
 <style scoped>

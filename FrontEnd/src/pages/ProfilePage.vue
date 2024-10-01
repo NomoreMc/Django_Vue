@@ -1,22 +1,17 @@
 <template>
   <div>
     <div class="profileContainer">
-      <TheAvatar :width="186" :height="186" />
+      <TheAvatar :width="186" :height="186" :src="user.avatar"/>
       <div class="profile">
         <p class="name">
-          <span>Nomore</span>
+          <span>{{ user.username }}</span>
           <router-link to="/profile/edit">编辑个人资料</router-link>
         </p>
-        <p class="handle">@Nomore</p>
+        <p class="handle">@{{ user.username }}</p>
         <div class="description">
-          <pre>
-blabla
-blabla
-blabla
-            </pre
-          >
+          <pre>{{ user.intro }}</pre>
         </div>
-        <p class="website">https://mrnomore.com</p>
+        <p class="website">{{ user.website }}</p>
       </div>
     </div>
     <div class="tabs">
@@ -43,8 +38,32 @@ blabla
 </template>
 
 <script setup>
+import { useStore } from "vuex";
+import { computed } from "vue";
 import TheAvatar from "../components/TheAvatar.vue";
 import TheIcon from "../components/TheIcon.vue";
+
+const store = useStore();
+
+const user = computed(() => store.state.user.user);
+
+const tabs = ref([
+  {
+      label: "我的",
+      icon: "posts",
+  },
+  {
+      label: "赞过",
+      icon: "like",
+  },
+  {
+      label: "收藏",
+      icon: "favorite",
+  },
+]);
+
+const currentTab = ref(0);
+
 </script>
 
 <style scoped>

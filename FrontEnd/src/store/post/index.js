@@ -1,4 +1,4 @@
-import { createPost, likePost, loadPost, favorPost } from "../../apis/post";
+import { createPost, likePost, loadPosts, favorPost } from "../../apis/post";
 
 const post = {
     state() {
@@ -48,7 +48,7 @@ const post = {
             commit("changeShowPostUpload", false);
         },
         async loadAllPosts({ commit }) {
-            const posts = await loadPost();
+            const posts = await loadPosts();
             commit("initializePostList", posts);
         },
         async toggleLike({ commit }, id) {
